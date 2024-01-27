@@ -35,6 +35,11 @@ dependencies:
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.2
+
+   # added get_it and url_launcher for the contacts page to allow for the user to
+  # either make a call or send a text message to the contact
+  get_it: ^7.6.7
+  url_launcher: ^6.2.4
   #text_to_speech: ^0.2.3
   font_awesome_flutter: ^10.1.0
   intl: ^0.19.0
