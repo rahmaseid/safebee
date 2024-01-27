@@ -1,4 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:safebee/Settings/addMapLocation.dart';
+import 'package:safebee/Settings/bookletPage.dart';
+import 'package:safebee/Settings/mapsPage.dart';
+
+import 'Settings/settingsPage.dart';
 
 void main() {
   runApp(const MyApp());
@@ -32,6 +37,12 @@ class MyApp extends StatelessWidget {
         useMaterial3: true,
       ),
       home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      routes: {
+        '/settings': (context) => SettingsPage(),
+        '/mapsPage': (context) => MapsPage(),
+        '/bookletPage': (context) => BookletPage(),
+        '/addMapLocation': (context) => AddMapLocation(),
+      },
     );
   }
 }
@@ -65,6 +76,7 @@ class _MyHomePageState extends State<MyHomePage> {
       // _counter without calling setState(), then the build method would not be
       // called again, and so nothing would appear to happen.
       _counter++;
+      Navigator.pushNamed(context, '/settings');
     });
   }
 
