@@ -7,8 +7,15 @@ import 'package:safebee/Settings/addMapLocation.dart';
 import 'package:safebee/Settings/bookletPage.dart';
 import 'package:safebee/Settings/mapsPage.dart';
 import 'package:safebee/Settings/settingsPage.dart';
+import 'package:safebee/screens/contacts_page.dart';
+import 'package:safebee/services/service_locator.dart'; //imported to support calls and messages
 
-void main() => runApp(const MyApp());
+//changed the main startup to be able to call the setupLocator to support calls and messages
+//was having errors before, for not calling this in main.
+void main() {
+  setupLocator(); // Call setupLocator before runApp
+  runApp(const MyApp());
+}
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -21,6 +28,8 @@ class MyApp extends StatelessWidget {
         '/mapsPage': (context) => const MapsPage(),
         '/bookletPage': (context) => BookletPage(),
         '/addMapLocation': (context) => AddMapLocation(),
+        '/contacts_Page': (context) => ContactsPage(),
+
       },
       theme: ThemeData(
         primarySwatch: Colors.blue,

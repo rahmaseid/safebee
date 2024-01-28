@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:safebee/Settings/SettingsItemClass.dart';
+import 'package:safebee/services/service_locator.dart'; //imported to support calls and messages
 
 class SettingsPage extends StatelessWidget {
   var menuItems = [
     SettingsItemClass(
         title: 'Call',
         description: 'This is a contact page which you can load your contacts',
-        pagetoLoad: '/mapsPage',
+        pagetoLoad: '/contacts_Page',
         icon: Icons.call),
     SettingsItemClass(
         title: 'Maps',
