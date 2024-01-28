@@ -16,7 +16,7 @@ class EmergencyScreen extends StatelessWidget {
 
       body: ListView.separated(
         itemBuilder: (BuildContext context, int index) {
-          List <String> names = ['Car Crash','Fire', 'Lost', 'Kidnapped/Trapped','Chemical Outbreak','Other' ];
+          List <String> names = ['Car Crash','Fire', 'Lost/Kidnapped', 'Trapped','Chemical Outbreak','Other' ];
           return Container(
             constraints: BoxConstraints(
               minHeight: 50, // Adjust this according to your needs
