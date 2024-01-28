@@ -1,0 +1,1 @@
+ C:\\Users\\kyro2\\OneDrive\\Desktop\\HACKMT\\safebee\\.dart_tool\\flutter_build\\f37a28a7073731dc2867dea540972731\\native_assets.yaml: 
