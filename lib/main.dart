@@ -3,6 +3,10 @@
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart';
+import 'package:safebee/Settings/addMapLocation.dart';
+import 'package:safebee/Settings/bookletPage.dart';
+import 'package:safebee/Settings/mapsPage.dart';
+import 'package:safebee/Settings/settingsPage.dart';
 
 void main() => runApp(const MyApp());
 
@@ -13,6 +17,11 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Safe bee',
+      routes: {
+        '/mapsPage': (context) => MapsPage(),
+        '/bookletPage': (context) => BookletPage(),
+        '/addMapLocation': (context) => AddMapLocation(),
+      },
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
@@ -144,7 +153,10 @@ class _MapScreenState extends State<MapScreen> {
                 // Update the state of the app
                 // ...
                 // Then close the drawer
-                Navigator.pop(context);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => SettingsPage()),
+                );
               },
             ),
             // Add more list tiles here
