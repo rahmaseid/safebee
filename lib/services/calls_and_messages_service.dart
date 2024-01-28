@@ -1,5 +1,4 @@
-
-      //Services to be able to use the native phone call and SMS features
+//Services to be able to use the native phone call and SMS features
 import 'package:url_launcher/url_launcher.dart';
 
 class CallsAndMessagesService {
