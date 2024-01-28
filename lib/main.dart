@@ -1,14 +1,18 @@
 // main.dart
 
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart';
+import 'package:safebee/2nd_page.dart';
 import 'package:safebee/Settings/addMapLocation.dart';
 import 'package:safebee/Settings/bookletPage.dart';
 import 'package:safebee/Settings/mapsPage.dart';
 import 'package:safebee/Settings/settingsPage.dart';
 import 'package:safebee/screens/contacts_page.dart';
-import 'package:safebee/services/service_locator.dart'; //imported to support calls and messages
+import 'package:safebee/services/service_locator.dart';
+import 'package:shared_preferences/shared_preferences.dart'; //imported to support calls and messages
 
 //changed the main startup to be able to call the setupLocator to support calls and messages
 //was having errors before, for not calling this in main.
@@ -29,7 +33,6 @@ class MyApp extends StatelessWidget {
         '/bookletPage': (context) => BookletPage(),
         '/addMapLocation': (context) => AddMapLocation(),
         '/contacts_Page': (context) => ContactsPage(),
-
       },
       theme: ThemeData(
         primarySwatch: Colors.blue,
@@ -58,6 +61,11 @@ class _MapScreenState extends State<MapScreen> {
     _checkLocationPermission();
   }
 
+  void _initializeMarkers() async {
+    await _addCurrentLocationMarker();
+    await _addFamilyMarkers();
+  }
+
   void _checkLocationPermission() async {
     bool _serviceEnabled;
     PermissionStatus _permissionGranted;
@@ -66,6 +74,7 @@ class _MapScreenState extends State<MapScreen> {
     if (!_serviceEnabled) {
       _serviceEnabled = await location.requestService();
       if (!_serviceEnabled) {
+        print("Location service not enabled");
         return;
       }
     }
@@ -73,48 +82,65 @@ class _MapScreenState extends State<MapScreen> {
     _permissionGranted = await location.hasPermission();
     if (_permissionGranted == PermissionStatus.denied) {
       _permissionGranted = await location.requestPermission();
-      if (_permissionGranted != PermissionStatus.granted) {}
+      if (_permissionGranted != PermissionStatus.granted) {
+        print("Location permission not granted");
+        return;
+      }
     }
+    _initializeMarkers();
+  }
 
-    _getCurrentLocation();
+  Future<void> _addCurrentLocationMarker() async {
+    final locData = await location.getLocation();
+    if (locData != null) {
+      LatLng currentLocation =
+          LatLng(locData.latitude ?? 9999, locData.longitude ?? 999);
+      setState(() {
+        _currentPosition = currentLocation;
+        _markers.add(
+          Marker(
+            markerId: const MarkerId('current_location'),
+            position: currentLocation,
+            infoWindow: const InfoWindow(
+              title: 'Current Location',
+              snippet: 'This is your current location',
+            ),
+            icon: BitmapDescriptor.defaultMarkerWithHue(
+                BitmapDescriptor.hueAzure),
+          ),
+        );
+      });
+    } else {
+      print("Failed to get current location");
+    }
   }
 
   Future<void> _addFamilyMarkers() async {
-    final locData = await location.getLocation();
+    final prefs = await SharedPreferences.getInstance();
+    String jsonString = prefs.getString('mapsMenuItems') ?? '[]';
+    List<MapsObject> savedLocations = MapsObject.decode(jsonString);
 
-    LatLng momLocation =
-        LatLng(40.7851, -83.9683); // Replace with actual coordinates
-    LatLng dadLocation =
-        LatLng(40.7855, -83.9688); // Replace with actual coordinates
-    LatLng myLocation = LatLng(locData.latitude ?? 111.0,
-        locData.longitude ?? 111.0); // Replace with actual coordinates
-
-    setState(() {
-      _markers.clear();
-      _markers.add(Marker(
-        markerId: const MarkerId('mom_location'),
-        position: momLocation,
-        infoWindow: const InfoWindow(title: 'Mom', snippet: 'Mom\'s location'),
-      ));
-      _markers.add(Marker(
-        markerId: const MarkerId('dad_location'),
-        position: dadLocation,
-        infoWindow: const InfoWindow(title: 'Dad', snippet: 'Dad\'s location'),
-      ));
-      _markers.add(Marker(
-        markerId: const MarkerId('my_location'),
-        position: myLocation,
-        infoWindow: const InfoWindow(title: 'Me', snippet: 'My location'),
-      ));
-    });
-  }
-
-  void _getCurrentLocation() async {
-    try {
-      await _addFamilyMarkers();
-    } catch (e) {
-      _isLoading = false;
-      // Handle exception when location service fails
+    for (var location in savedLocations) {
+      try {
+        List<String> latLng = location.Location.split(',');
+        double latitude = double.parse(latLng[0]);
+        double longitude = double.parse(latLng[1]);
+        setState(() {
+          _markers.add(
+            Marker(
+              markerId: MarkerId(location.id),
+              position: LatLng(latitude, longitude),
+              infoWindow: InfoWindow(
+                title: location.id,
+                snippet:
+                    '${latitude.toStringAsFixed(3)}, ${longitude.toStringAsFixed(3)}',
+              ),
+            ),
+          );
+        });
+      } catch (e) {
+        print('Error parsing location data: $e');
+      }
     }
   }
 
@@ -138,7 +164,7 @@ class _MapScreenState extends State<MapScreen> {
                 color: Colors.blue,
               ),
               child: Text(
-                'Drawer Header',
+                'Main Menu',
                 style: TextStyle(
                   color: Colors.white,
                   fontSize: 24,
@@ -196,7 +222,14 @@ class _MapScreenState extends State<MapScreen> {
               padding: EdgeInsets.all(16.0),
               child: ElevatedButton(
                 onPressed: () {
-                  // TODO: Add your danger button functionality here
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => SettingsPage()),
+                  );
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => WelcomePage()),
+                  );
                 },
                 style: ElevatedButton.styleFrom(
                   primary: Colors.red, // Background color
@@ -219,5 +252,32 @@ class _MapScreenState extends State<MapScreen> {
         ],
       ),
     );
+  }
+}
+
+class MapsObject {
+  String id;
+  String Location;
+
+  MapsObject({required this.id, required this.Location});
+
+  factory MapsObject.fromJson(Map<String, dynamic> json) {
+    return MapsObject(
+      id: json['id'] as String,
+      Location: json['Location'] as String,
+    );
+  }
+
+  static List<MapsObject> decode(String jsonString) =>
+      (json.decode(jsonString) as List)
+          .map((item) => MapsObject.fromJson(item as Map<String, dynamic>))
+          .toList();
+
+  // You might also want to implement a method to convert MapsObject to JSON
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'Location': Location,
+    };
   }
 }
