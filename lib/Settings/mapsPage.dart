@@ -1,7 +1,10 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:safebee/Settings/SettingsItemClass.dart';
 import 'package:safebee/Settings/addMapLocation.dart';
 import 'package:safebee/Settings/editMapLocation.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class MapsPage extends StatefulWidget {
   const MapsPage({super.key});
@@ -11,10 +14,43 @@ class MapsPage extends StatefulWidget {
 }
 
 class _MapsPage extends State<MapsPage> {
-  List<MapsObject> menuItems = [
-    MapsObject(id: '1234', Location: '1301 E Main St, Murfreesboro, TN 37132')
-  ];
+  late SharedPreferences _prefs;
+  List<MapsObject> mapsMenuItems = [];
+
   @override
+  void initState() {
+    super.initState();
+    _loadList();
+  }
+
+  // Load the list from SharedPreferences
+  Future<void> _loadList() async {
+    _prefs = await SharedPreferences.getInstance();
+
+    // Retrieve the JSON-encoded string from SharedPreferences
+    String jsonString = _prefs.getString('mapsMenuItems') ?? '[]';
+    // Decode the string to get the list
+    print(jsonString); // setState(() {
+
+    List<MapsObject> myObjects = (json.decode(jsonString) as List)
+        .map((jsonObject) => MapsObject.fromJson(jsonObject))
+        .toList();
+
+    // Print the decoded list of objects
+    print(myObjects[0].Location);
+    setState(() {
+      mapsMenuItems = myObjects;
+    });
+  }
+
+  // Save a new list to SharedPreferences
+  Future<void> _saveList(List<MapsObject> newList) async {
+    // Encode the list to a JSON-encoded string
+    String jsonString = MapsObject.encode(newList);
+    // Save the string to SharedPreferences
+    await _prefs.setString('mapsMenuItems', jsonString);
+  }
+
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
@@ -25,11 +61,13 @@ class _MapsPage extends State<MapsPage> {
             onPressed: () async {
               final result =
                   await Navigator.pushNamed(context, '/addMapLocation');
+              mapsMenuItems.add(result as MapsObject);
+
               setState(() {
-                menuItems.add(result as MapsObject);
+                _saveList(mapsMenuItems);
               });
 
-              //menuItems.add(result as MapsObject);
+              //mapsMenuItems.add(result as MapsObject);
               // Add your add button logic here
               // For example, you can navigate to a new page
             },
@@ -44,7 +82,7 @@ class _MapsPage extends State<MapsPage> {
               child: SizedBox(
                 height: 200.0,
                 child: ListView.builder(
-                  itemCount: menuItems.length,
+                  itemCount: mapsMenuItems.length,
                   itemBuilder: (context, index) {
                     return Card(
                       child: ListTile(
@@ -55,9 +93,9 @@ class _MapsPage extends State<MapsPage> {
                           semanticLabel:
                               'Text to announce in accessibility modes',
                         ),
-                        title: Text(menuItems[index].id),
-                        subtitle:
-                            Text('Description: ${menuItems[index].Location}'),
+                        title: Text(mapsMenuItems[index].id),
+                        subtitle: Text(
+                            'Description: ${mapsMenuItems[index].Location}'),
                         trailing: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
@@ -68,12 +106,13 @@ class _MapsPage extends State<MapsPage> {
                                 final result = await Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                    builder: (context) =>
-                                        EditMapLocation(maps: menuItems[index]),
+                                    builder: (context) => EditMapLocation(
+                                        maps: mapsMenuItems[index]),
                                   ),
                                 );
                                 setState(() {
-                                  menuItems[index] = (result as MapsObject);
+                                  mapsMenuItems[index] = (result as MapsObject);
+                                  _saveList(mapsMenuItems);
                                 });
                               },
                             ),
@@ -82,7 +121,8 @@ class _MapsPage extends State<MapsPage> {
                               onPressed: () {
                                 // Handle delete button press
                                 setState(() {
-                                  menuItems.remove(menuItems[index]);
+                                  mapsMenuItems.remove(mapsMenuItems[index]);
+                                  _saveList(mapsMenuItems);
                                 });
                               },
                             ),
@@ -127,4 +167,20 @@ class MapsObject {
       Location: json['Location'],
     );
   }
+
+  static Map<String, dynamic> toMap(MapsObject mapsObject) => {
+        'id': mapsObject.id,
+        'Location': mapsObject.Location,
+      };
+
+  static String encode(List<MapsObject> objects) => json.encode(
+        objects
+            .map<Map<String, dynamic>>((item) => MapsObject.toMap(item))
+            .toList(),
+      );
+
+  static List<MapsObject> decode(String jsonString) =>
+      (json.decode(jsonString) as List<dynamic>)
+          .map<MapsObject>((item) => MapsObject.fromJson(item))
+          .toList();
 }

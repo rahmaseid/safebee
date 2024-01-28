@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:safebee/Settings/addMapLocation.dart';
 import 'package:safebee/Settings/bookletPage.dart';
 import 'package:safebee/Settings/mapsPage.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'Settings/settingsPage.dart';
 
