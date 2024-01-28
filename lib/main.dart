@@ -6,7 +6,7 @@ import 'package:safebee/services/calls_and_messages_service.dart'; //imported to
 import 'package:safebee/services/service_locator.dart'; //imported to support calls and messages
 
 void main() {
-    setupLocator();
+  setupLocator();
   runApp(const MyApp());
 }
 
@@ -17,30 +17,32 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Home Test',
-      home: DefaultTabController(
-        length: 2, // Set the number of tabs
-        child: Scaffold(
-          appBar: AppBar(
-            title: const Text('Home Test'),
-            bottom: const TabBar(
-              tabs: [
-                Tab(icon: Icon(Icons.home), text: 'Home'),
-                Tab(icon: Icon(Icons.contacts), text: 'Contacts'), // Add this line for the Contacts tab
-              ],
-            ), 
-          ),
-          body: TabBarView(
-            children: [
-              // The content of the first tab (replace this with the home page)
-              const Center(
-                child: Text('Home Page'),
-              ),
-              // The content of the second tab (ContactsPage)
-              ContactsPage(),
-            ],
-          ),
-        ),
+      home: HomeScreen(),
+    );
+  }
+}
+
+class HomeScreen extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Home Test'),
       ),
+      body: Center(
+        child: const Text('Home Page'),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          // Navigate to Contacts page when the button is pressed
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => ContactsPage()),
+          );
+        },
+        child: Icon(Icons.contacts),
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
     );
   }
 }

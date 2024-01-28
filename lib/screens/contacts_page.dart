@@ -65,12 +65,26 @@ class _ContactsPageState extends State<ContactsPage> {
           );
         },
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          // Showing the add/edit contact form for adding a new contact
-          _showAddEditContactForm(context);
-        },
-        child: Icon(Icons.add),
+       floatingActionButton: Column(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          FloatingActionButton( // New FloatingActionButton for SettingsPage
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => SettingsPage()),
+              );
+            },
+            child: Icon(Icons.settings),
+          ),
+          SizedBox(height: 16),
+          FloatingActionButton( // Original FloatingActionButton for adding contacts
+            onPressed: () {
+              _showAddEditContactForm(context);
+            },
+            child: Icon(Icons.add),
+          ),
+        ],
       ),
     );
   }
@@ -126,17 +140,20 @@ class _ContactsPageState extends State<ContactsPage> {
                   //here we are calling the call and text functions from the service locator
                   ElevatedButton(
                     onPressed: () => _service.call(number),
-                    child: Text('Call'),
+                    child: Icon(Icons.call),
                   ),
                   ElevatedButton(
                     onPressed: () => _service.sendSms(number),
-                    child: Text('Text'),
+                    child: Icon(Icons.message),
                   ),
                 ],
               ), 
             ],
           ),
           actions: [
+             Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
             ElevatedButton(
               onPressed: () {
                 // Saves the contact or updates the existing contact
@@ -183,8 +200,10 @@ class _ContactsPageState extends State<ContactsPage> {
                 // Here we are choosing red to be the color of the delete button
                 // to make the user more aware of the action they are about to take
                 style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-                child: Text('Delete Contact'),
+                child: Icon(Icons.delete),
               ),
+          ],
+          ),
           ],
         );
       },
@@ -207,5 +226,18 @@ class Contact {
   Contact({required this.name, required this.phoneNumber, required this.userId, required this.priority});
 }
 
+class SettingsPage extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Settings'),
+      ),
+      body: Center(
+        child: Text('This is the Settings Page'),
+      ),
+    );
+  }
+}
 
 //push
