@@ -18,7 +18,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Safe bee',
       routes: {
-        '/mapsPage': (context) => MapsPage(),
+        '/mapsPage': (context) => const MapsPage(),
         '/bookletPage': (context) => BookletPage(),
         '/addMapLocation': (context) => AddMapLocation(),
       },
