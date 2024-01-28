@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:safebee/Settings/SettingsItemClass.dart';
+import 'package:safebee/services/service_locator.dart'; //imported to support calls and messages
 
 class SettingsPage extends StatelessWidget {
   var menuItems = [

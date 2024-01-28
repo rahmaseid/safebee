@@ -643,3 +643,6 @@ ios/Runner/GeneratedPluginRegistrant.m
 build/
 build/location/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/class-fq-name-to-source.tab
 build/location/kotlin/compileDebugKotlin/cacheable/last-build.bin
+android/local.properties~4a1d163... added routes for contacts page, styling changes in the contacts page.
+.flutter*
+ios/
