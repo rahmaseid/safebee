@@ -1,34 +1,77 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:safebee/services/calls_and_messages_service.dart'; //imported to support calls and messages
-import 'package:safebee/services/service_locator.dart'; //imported to support calls and messages
+import 'package:safebee/services/service_locator.dart';
+import 'package:shared_preferences/shared_preferences.dart'; //imported to support calls and messages
 
 //---------------------This is our Contacts page--------------
-            // This page Delivers 5 major functions
-                // 1. Add a contact
-                // 2. Edit a contact
-                // 3. Delete a contact
-                // 4. Call a contact
-                // 5. Text a contact
-
+// This page Delivers 5 major functions
+// 1. Add a contact
+// 2. Edit a contact
+// 3. Delete a contact
+// 4. Call a contact
+// 5. Text a contact
 
 class ContactsPage extends StatefulWidget {
   @override
   _ContactsPageState createState() => _ContactsPageState();
 }
 
-
 class _ContactsPageState extends State<ContactsPage> {
-              //List of preloaded contacts
-      final CallsAndMessagesService _service = locator<CallsAndMessagesService>();
-      final String number = "123456789";
-      final String email = "kaneRich@example.com";
-  
-  List<Contact> contacts = [
-    Contact(name: 'Mom', phoneNumber: '123-456-7890', userId: '001', priority: '1'),
-    Contact(name: 'Dad', phoneNumber: '987-654-3210', userId: '002', priority: '2'),
-    Contact(name: 'Aunt Lisa', phoneNumber: '456-789-0123', userId: '003', priority: '3'),
+  //List of preloaded contacts
+  final CallsAndMessagesService _service = locator<CallsAndMessagesService>();
+  final String number = "123456789";
+  final String email = "kaneRich@example.com";
+  late SharedPreferences _prefs;
+  List<Contact> contacts = [];
+  List<Contact> defaultcontacts = [
+    Contact(
+        name: 'Mom', phoneNumber: '123-456-7890', userId: '001', priority: '1'),
+    Contact(
+        name: 'Dad', phoneNumber: '987-654-3210', userId: '002', priority: '2'),
+    Contact(
+        name: 'Aunt Lisa',
+        phoneNumber: '456-789-0123',
+        userId: '003',
+        priority: '3'),
     // Has the ability to either preload more contacts or dynamically add contacts
   ];
+  void initState() {
+    super.initState();
+    _loadList();
+  }
+
+  // Load the list from SharedPreferences
+  Future<void> _loadList() async {
+    _prefs = await SharedPreferences.getInstance();
+
+    // Retrieve the JSON-encoded string from SharedPreferences
+    String jsonString = _prefs.getString('mapsMenuItems') ?? "empty";
+    if (jsonString == "empty") {
+      setState(() {
+        contacts = defaultcontacts;
+      });
+    }
+    // Decode the string to get the list
+
+    List<Contact> myObjects = (json.decode(jsonString) as List)
+        .map((jsonObject) => Contact.fromJson(jsonObject))
+        .toList();
+
+    // Print the decoded list of objects
+    setState(() {
+      contacts = myObjects;
+    });
+  }
+
+  // Save a new list to SharedPreferences
+  Future<void> _saveList(List<Contact> newList) async {
+    // Encode the list to a JSON-encoded string
+    String jsonString = Contact.encode(newList);
+    // Save the string to SharedPreferences
+    await _prefs.setString('contactsMenuItems', jsonString);
+  }
 
   // Controllers for the text fields in the add/edit contact form
   TextEditingController nameController = TextEditingController();
@@ -39,11 +82,10 @@ class _ContactsPageState extends State<ContactsPage> {
   // Index of the contact being edited
   int editingIndex = -1;
 
-
-                  //Building the Widget
+  //Building the Widget
   @override
   Widget build(BuildContext context) {
-    // Here we Sort contacts by priority before displaying them 
+    // Here we Sort contacts by priority before displaying them
     // to dynamically display the most important contacts first
     contacts.sort((a, b) => a.priority.compareTo(b.priority));
 
@@ -58,9 +100,10 @@ class _ContactsPageState extends State<ContactsPage> {
             title: Text(contacts[index].name),
             subtitle: Text(contacts[index].phoneNumber),
             onTap: () {
-              // Here we are showing the add/edit contact form 
+              // Here we are showing the add/edit contact form
               // with the selected contact's data
-              _showAddEditContactForm(context, contact: contacts[index], index: index);
+              _showAddEditContactForm(context,
+                  contact: contacts[index], index: index);
             },
           );
         },
@@ -76,7 +119,8 @@ class _ContactsPageState extends State<ContactsPage> {
   }
 
   // Method to show the add/edit contact form
-  void _showAddEditContactForm(BuildContext context, {Contact? contact, int? index}) {
+  void _showAddEditContactForm(BuildContext context,
+      {Contact? contact, int? index}) {
     // Initializing controllers with existing contact data for editing
     if (contact != null) {
       nameController.text = contact.name;
@@ -92,7 +136,7 @@ class _ContactsPageState extends State<ContactsPage> {
       priorityController.clear();
       editingIndex = -1;
     }
-  //displaying the dialog
+    //displaying the dialog
     showDialog(
       context: context,
       builder: (context) {
@@ -133,7 +177,7 @@ class _ContactsPageState extends State<ContactsPage> {
                     child: Text('Text'),
                   ),
                 ],
-              ), 
+              ),
             ],
           ),
           actions: [
@@ -149,13 +193,17 @@ class _ContactsPageState extends State<ContactsPage> {
 
                 if (editingIndex != -1) {
                   // If editing, we replace the old contact with the new updated contact
+                  contacts[editingIndex] = newContact;
+
                   setState(() {
-                    contacts[editingIndex] = newContact;
+                    _saveList(contacts);
                   });
                 } else {
                   // If we are adding, we then add the new contact to the list
+                  contacts.add(newContact);
+
                   setState(() {
-                    contacts.add(newContact);
+                    _saveList(contacts);
                   });
                 }
 
@@ -172,8 +220,10 @@ class _ContactsPageState extends State<ContactsPage> {
               ElevatedButton(
                 onPressed: () {
                   // This deletes the contact
+                  contacts.removeAt(editingIndex);
+
                   setState(() {
-                    contacts.removeAt(editingIndex);
+                    _saveList(contacts);
                   });
                   // Another instance of Sorting contacts by priority before we close the dialog
                   contacts.sort((a, b) => a.priority.compareTo(b.priority));
@@ -192,20 +242,45 @@ class _ContactsPageState extends State<ContactsPage> {
   }
 }
 
-
-
-
-                      //Contact class
+//Contact class
 class Contact {
   final String name;
   final String phoneNumber;
   final String userId;
   final String priority;
 
+  //A contact must have a name, phone number, user id, and priority
+  Contact(
+      {required this.name,
+      required this.phoneNumber,
+      required this.userId,
+      required this.priority});
+  factory Contact.fromJson(Map<String, dynamic> json) {
+    return Contact(
+      name: json['name'],
+      phoneNumber: json['phoneNumber'],
+      userId: json['userId'],
+      priority: json['priority'],
+    );
+  }
 
-            //A contact must have a name, phone number, user id, and priority
-  Contact({required this.name, required this.phoneNumber, required this.userId, required this.priority});
+  static Map<String, dynamic> toMap(Contact mapsObject) => {
+        'name': mapsObject.name,
+        'phoneNumber': mapsObject.phoneNumber,
+        'userId': mapsObject.userId,
+        'priority': mapsObject.priority,
+      };
+
+  static String encode(List<Contact> objects) => json.encode(
+        objects
+            .map<Map<String, dynamic>>((item) => Contact.toMap(item))
+            .toList(),
+      );
+
+  static List<Contact> decode(String jsonString) =>
+      (json.decode(jsonString) as List<dynamic>)
+          .map<Contact>((item) => Contact.fromJson(item))
+          .toList();
 }
-
 
 //push

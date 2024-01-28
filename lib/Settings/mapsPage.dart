@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:safebee/Settings/SettingsItemClass.dart';
 import 'package:safebee/Settings/addMapLocation.dart';
 import 'package:safebee/Settings/editMapLocation.dart';
+import 'package:safebee/screens/contacts_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class MapsPage extends StatefulWidget {
@@ -30,14 +31,11 @@ class _MapsPage extends State<MapsPage> {
     // Retrieve the JSON-encoded string from SharedPreferences
     String jsonString = _prefs.getString('mapsMenuItems') ?? '[]';
     // Decode the string to get the list
-    print(jsonString); // setState(() {
 
     List<MapsObject> myObjects = (json.decode(jsonString) as List)
         .map((jsonObject) => MapsObject.fromJson(jsonObject))
         .toList();
-
     // Print the decoded list of objects
-    print(myObjects[0].Location);
     setState(() {
       mapsMenuItems = myObjects;
     });
@@ -46,6 +44,7 @@ class _MapsPage extends State<MapsPage> {
   // Save a new list to SharedPreferences
   Future<void> _saveList(List<MapsObject> newList) async {
     // Encode the list to a JSON-encoded string
+
     String jsonString = MapsObject.encode(newList);
     // Save the string to SharedPreferences
     await _prefs.setString('mapsMenuItems', jsonString);
@@ -93,9 +92,9 @@ class _MapsPage extends State<MapsPage> {
                           semanticLabel:
                               'Text to announce in accessibility modes',
                         ),
-                        title: Text(mapsMenuItems[index].id),
+                        title: Text(mapsMenuItems[index].contact.name),
                         subtitle: Text(
-                            'Description: ${mapsMenuItems[index].Location}'),
+                            'Description: ${mapsMenuItems[index].location}'),
                         trailing: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
@@ -149,28 +148,24 @@ class _MapsPage extends State<MapsPage> {
   openPage(String pagetoLoad, BuildContext context) {
     Navigator.pushNamed(context, pagetoLoad);
   }
-
-  AddPage() {
-    print("HI");
-  }
 }
 
 class MapsObject {
-  String id;
-  String Location;
+  Contact contact;
+  String location;
 
-  MapsObject({required this.id, required this.Location});
+  MapsObject({required this.contact, required this.location});
 
   factory MapsObject.fromJson(Map<String, dynamic> json) {
     return MapsObject(
-      id: json['id'],
-      Location: json['Location'],
+      contact: Contact.fromJson((json['contact'])),
+      location: json['location'],
     );
   }
 
   static Map<String, dynamic> toMap(MapsObject mapsObject) => {
-        'id': mapsObject.id,
-        'Location': mapsObject.Location,
+        'contact': Contact.toMap(mapsObject.contact),
+        'location': mapsObject.location,
       };
 
   static String encode(List<MapsObject> objects) => json.encode(

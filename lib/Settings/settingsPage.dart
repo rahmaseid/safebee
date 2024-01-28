@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:safebee/Settings/SettingsItemClass.dart';
+import 'package:safebee/services/calls_and_messages_service.dart';
+import 'package:get_it/get_it.dart';
 
 class SettingsPage extends StatelessWidget {
   var menuItems = [
     SettingsItemClass(
         title: 'Call',
         description: 'This is a contact page which you can load your contacts',
-        pagetoLoad: '/mapsPage',
+        pagetoLoad: '/callPage',
         icon: Icons.call),
     SettingsItemClass(
         title: 'Maps',
@@ -74,10 +76,5 @@ class SettingsPage extends StatelessWidget {
         ),
       ),
     );
-  }
-
-  openPage(String pagetoLoad, BuildContext context) {
-    //Navigator.pushNamed(context, pagetoLoad);
-    print(pagetoLoad);
   }
 }

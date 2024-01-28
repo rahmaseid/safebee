@@ -3,10 +3,12 @@
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart';
+import 'package:safebee/Settings/addBookletLocation.dart';
 import 'package:safebee/Settings/addMapLocation.dart';
 import 'package:safebee/Settings/bookletPage.dart';
 import 'package:safebee/Settings/mapsPage.dart';
 import 'package:safebee/Settings/settingsPage.dart';
+import 'package:safebee/screens/contacts_page.dart';
 
 void main() => runApp(const MyApp());
 
@@ -18,9 +20,11 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Safe bee',
       routes: {
+        '/callPage': (context) => ContactsPage(),
         '/mapsPage': (context) => MapsPage(),
         '/bookletPage': (context) => BookletPage(),
         '/addMapLocation': (context) => AddMapLocation(),
+        '/addBooklet': (context) => AddBookletLocation(),
       },
       theme: ThemeData(
         primarySwatch: Colors.blue,

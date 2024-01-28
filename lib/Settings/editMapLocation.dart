@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:safebee/Settings/mapsPage.dart';
+import 'package:safebee/screens/contacts_page.dart';
 
 class EditMapLocation extends StatefulWidget {
   @override
@@ -8,15 +9,29 @@ class EditMapLocation extends StatefulWidget {
   _MyFormState createState() => _MyFormState();
 }
 
+List<Contact> defaultcontacts = [
+  Contact(
+      name: 'Mom', phoneNumber: '123-456-7890', userId: '001', priority: '1'),
+  Contact(
+      name: 'Dad', phoneNumber: '987-654-3210', userId: '002', priority: '2'),
+  Contact(
+      name: 'Aunt Lisa',
+      phoneNumber: '456-789-0123',
+      userId: '003',
+      priority: '3'),
+  // Has the ability to either preload more contacts or dynamically add contacts
+];
+
 class _MyFormState extends State<EditMapLocation> {
   final _formKey = GlobalKey<FormState>();
+  Contact dropdownValue = defaultcontacts.toList().first;
 
   @override
   Widget build(BuildContext context) {
     TextEditingController _nameController =
-        TextEditingController(text: widget.maps.id);
+        TextEditingController(text: widget.maps.contact.name);
     TextEditingController _locationController =
-        TextEditingController(text: widget.maps.Location);
+        TextEditingController(text: widget.maps.location);
     return Scaffold(
       appBar: AppBar(
         title: Text('Flutter Form Example'),
@@ -28,34 +43,46 @@ class _MyFormState extends State<EditMapLocation> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              TextFormField(
-                controller: _nameController,
-                decoration: InputDecoration(
-                  labelText: 'ID',
+              SizedBox(height: 16.0),
+              DropdownButton<Contact>(
+                value: dropdownValue,
+                icon: const Icon(Icons.arrow_downward),
+                elevation: 16,
+                style: const TextStyle(color: Colors.deepPurple),
+                underline: Container(
+                  height: 2,
+                  color: Colors.deepPurpleAccent,
                 ),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter your ID';
-                  }
-                  return null;
+                onChanged: (Contact? value) {
+                  // This is called when the user selects an item.
+                  setState(() {
+                    dropdownValue = value!;
+                  });
                 },
+                items: defaultcontacts
+                    .map<DropdownMenuItem<Contact>>((Contact value) {
+                  return DropdownMenuItem<Contact>(
+                    value: value,
+                    child: Text(value.name),
+                  );
+                }).toList(),
               ),
               SizedBox(height: 16.0),
               TextFormField(
                 controller: _locationController,
                 decoration: InputDecoration(
-                  labelText: 'Location',
+                  labelText: 'location',
                 ),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Please enter your Location';
+                    return 'Please enter your location';
                   }
                   // You can add more complex email validation logic here
                   return null;
                 },
               ),
               SizedBox(height: 16.0),
-              Text(widget.maps.Location),
+              Text(widget.maps.location),
               SizedBox(height: 16.0),
               ElevatedButton(
                 onPressed: () {
@@ -63,8 +90,8 @@ class _MyFormState extends State<EditMapLocation> {
                   if (_formKey.currentState!.validate()) {
                     // Form is valid, process the data
                     var returnObj = MapsObject(
-                        id: _nameController.text,
-                        Location: _locationController.text);
+                        contact: dropdownValue,
+                        location: _locationController.text);
 
                     // You can perform actions with the form data here
                     Navigator.pop(context, returnObj);
