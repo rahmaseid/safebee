@@ -138,7 +138,7 @@ class _MapsPage extends State<MapsPage> {
               onPressed: () {
                 Navigator.pop(context); // Go back to the main page
               },
-              child: Text('Go Return'),
+              child: Text('Return'),
             ),
           ],
         ),

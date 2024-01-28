@@ -640,3 +640,6 @@ build/url_launcher_android/tmp/compileDebugJavaWithJavac/previous-compilation-da
 ios/Runner/GeneratedPluginRegistrant.m
 android/app/src/main/java/io/flutter/plugins/GeneratedPluginRegistrant.java
 ios/Runner/GeneratedPluginRegistrant.m
+build/
+build/location/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/class-fq-name-to-source.tab
+build/location/kotlin/compileDebugKotlin/cacheable/last-build.bin

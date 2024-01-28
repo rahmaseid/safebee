@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart';
+import 'package:safebee/2nd_page.dart';
 import 'package:safebee/Settings/addMapLocation.dart';
 import 'package:safebee/Settings/bookletPage.dart';
 import 'package:safebee/Settings/mapsPage.dart';
@@ -16,11 +17,12 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Safe bee',
+      title: 'SafeBee',
       routes: {
         '/mapsPage': (context) => const MapsPage(),
         '/bookletPage': (context) => BookletPage(),
         '/addMapLocation': (context) => AddMapLocation(),
+        '/emergencyMenu': (context) => const EmergencyScreen()
       },
       theme: ThemeData(
         primarySwatch: Colors.blue,
@@ -113,7 +115,7 @@ class _MapScreenState extends State<MapScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Safe bee'),
+        title: const Text('SafeBee'),
         // This icon is typically included by default when using a Drawer
       ),
       drawer: Drawer(
@@ -129,7 +131,7 @@ class _MapScreenState extends State<MapScreen> {
                 color: Colors.blue,
               ),
               child: Text(
-                'Drawer Header',
+                'Features',
                 style: TextStyle(
                   color: Colors.white,
                   fontSize: 24,
@@ -187,7 +189,7 @@ class _MapScreenState extends State<MapScreen> {
               padding: EdgeInsets.all(16.0),
               child: ElevatedButton(
                 onPressed: () {
-                  // TODO: Add your danger button functionality here
+                  Navigator.pushNamed(context, '/emergencyMenu');
                 },
                 style: ElevatedButton.styleFrom(
                   primary: Colors.red, // Background color

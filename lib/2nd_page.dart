@@ -1,32 +1,9 @@
 import 'package:flutter/material.dart';
 
-void main() => runApp(MaterialApp(
-  home: WelcomePage(),
-//  child: Text(
-//    'hello, kids!',
-//    style: TextStyle(
-//      fontSize: 25.0,
-//      fontWeight: FontWeight.bold,
-//      letterSpacing: 2.0,
-//      fontFamily: 'Ubuntu',
-),
-//  const Row(
-//    mainAxisAlignment: MainAxisAlignment.center,
-//    crossAxisAlignment: CrossAxisAlignment.center,
-//    children: <Widget> [
-//      Text('Hello world. How can I help you?'),
-//      TextButton(
-//        onPressed: null,
-//        style: ButtonStyle(
-//          backgroundColor: MaterialStatePropertyAll(Colors.lightBlue),
-//        ),
-//      child: Text('Car Crash'),
-//      )
-//    ],
-);
 
-class WelcomePage extends StatelessWidget {
-  //const ({Key? key}) : super(key: key);
+
+class EmergencyScreen extends StatelessWidget {
+  const EmergencyScreen({Key? key}) : super(key: key);
   @override
   Widget build(BuildContext context) {
     return Scaffold(
