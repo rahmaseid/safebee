@@ -10,7 +10,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Maps Sample App',
+      title: 'Safe bee',
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
@@ -59,29 +59,39 @@ class _MapScreenState extends State<MapScreen> {
     _getCurrentLocation();
   }
 
+  Future<void> _addFamilyMarkers() async {
+    final locData = await location.getLocation();
+
+    LatLng momLocation =
+        LatLng(40.7851, -83.9683); // Replace with actual coordinates
+    LatLng dadLocation =
+        LatLng(40.7855, -83.9688); // Replace with actual coordinates
+    LatLng myLocation = LatLng(locData.latitude ?? 111.0,
+        locData.longitude ?? 111.0); // Replace with actual coordinates
+
+    setState(() {
+      _markers.clear();
+      _markers.add(Marker(
+        markerId: const MarkerId('mom_location'),
+        position: momLocation,
+        infoWindow: const InfoWindow(title: 'Mom', snippet: 'Mom\'s location'),
+      ));
+      _markers.add(Marker(
+        markerId: const MarkerId('dad_location'),
+        position: dadLocation,
+        infoWindow: const InfoWindow(title: 'Dad', snippet: 'Dad\'s location'),
+      ));
+      _markers.add(Marker(
+        markerId: const MarkerId('my_location'),
+        position: myLocation,
+        infoWindow: const InfoWindow(title: 'Me', snippet: 'My location'),
+      ));
+    });
+  }
+
   void _getCurrentLocation() async {
     try {
-      final locData = await location.getLocation();
-      setState(() {
-        _currentPosition =
-            LatLng(locData.latitude ?? 111.0, locData.longitude ?? 111.0);
-        mapController.animateCamera(CameraUpdate.newCameraPosition(
-          CameraPosition(
-            target: _currentPosition,
-            zoom: 15.0,
-          ),
-        ));
-        _markers.clear();
-        _markers.add(Marker(
-          markerId: const MarkerId('current_location'),
-          position: _currentPosition,
-          infoWindow: const InfoWindow(
-            title: 'My Location',
-            snippet: 'This is where I am!',
-          ),
-        ));
-        _isLoading = false;
-      });
+      await _addFamilyMarkers();
     } catch (e) {
       _isLoading = false;
       // Handle exception when location service fails
@@ -92,21 +102,99 @@ class _MapScreenState extends State<MapScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Maps Sample App'),
+        title: const Text('Safe bee'),
+        // This icon is typically included by default when using a Drawer
       ),
-      body: _currentPosition.latitude == 111.0 &&
-              _currentPosition.longitude == 111.0
-          ? const Center(child: CircularProgressIndicator())
-          : GoogleMap(
-              onMapCreated: (controller) => mapController = controller,
-              initialCameraPosition: CameraPosition(
-                target: _currentPosition,
-                zoom: 15.0,
+      drawer: Drawer(
+        // Add a ListView to the drawer. This ensures the user can scroll
+        // through the options in the drawer if there isn't enough vertical
+        // space to fit everything.
+        child: ListView(
+          // Important: Remove any padding from the ListView.
+          padding: EdgeInsets.zero,
+          children: <Widget>[
+            DrawerHeader(
+              decoration: BoxDecoration(
+                color: Colors.blue,
               ),
-              markers: _markers,
-              myLocationEnabled: true,
-              myLocationButtonEnabled: true,
+              child: Text(
+                'Drawer Header',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 24,
+                ),
+              ),
             ),
+            ListTile(
+              leading: Icon(Icons.map),
+              title: Text('Map'),
+              onTap: () {
+                // Update the state of the app
+                // ...
+                // Then close the drawer
+                Navigator.pop(context);
+              },
+            ),
+            ListTile(
+              leading: Icon(Icons.settings),
+              title: Text('Settings'),
+              onTap: () {
+                // Update the state of the app
+                // ...
+                // Then close the drawer
+                Navigator.pop(context);
+              },
+            ),
+            // Add more list tiles here
+          ],
+        ),
+      ),
+      body: Stack(
+        children: [
+          // Your GoogleMap widget
+          _currentPosition.latitude == 111.0 &&
+                  _currentPosition.longitude == 111.0
+              ? const Center(child: CircularProgressIndicator())
+              : GoogleMap(
+                  onMapCreated: (controller) => mapController = controller,
+                  initialCameraPosition: CameraPosition(
+                    target: _currentPosition,
+                    zoom: 15.0,
+                  ),
+                  markers: _markers,
+                  myLocationEnabled: true,
+                  myLocationButtonEnabled: true,
+                ),
+
+          // Centered "Danger" button
+          Align(
+            alignment: Alignment.bottomCenter,
+            child: Padding(
+              padding: EdgeInsets.all(16.0),
+              child: ElevatedButton(
+                onPressed: () {
+                  // TODO: Add your danger button functionality here
+                },
+                style: ElevatedButton.styleFrom(
+                  primary: Colors.red, // Background color
+                  onPrimary: Colors.white, // Text color
+                  padding: EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12), // Rounded corners
+                  ),
+                ),
+                child: const Text(
+                  'DANGER',
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
