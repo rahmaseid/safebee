@@ -8,113 +8,41 @@ class EmergencyScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('SafeBee'),
+        title: const Text('Type of Emergency'),
         centerTitle: true,
-        backgroundColor: Colors.deepPurpleAccent,
-      ),
-      //body: const Row(
-        //mainAxisAlignment: MainAxisAlignment.center,
-        //  crossAxisAlignment: CrossAxisAlignment.center,
-        //children: <Widget> [
-            //Text('Hello world. How can I help you?'),
-        //],
-      //),
-      body: const Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: <Widget> [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: <Widget> [
-              Text('Hello. How can I help you?')
-            ],
-          ),
-          TextButton(
-            onPressed: null,
-            style: ButtonStyle(
-             backgroundColor: MaterialStatePropertyAll(Colors.lightBlue),
-            ),
-            child: Text("Car Crash",
-              style: TextStyle(
-                fontFamily: 'Ubuntu',
-                fontWeight: FontWeight.bold,
-                fontSize: 15.0,
-                color: Colors.black,
-              ),
-            ),
-          ),
-          TextButton(
-            onPressed: null,
-            style: ButtonStyle(
-              backgroundColor: MaterialStatePropertyAll(Colors.lime)
-            ),
-            child: Text("Fire",
-              style: TextStyle(
-                fontFamily: 'Ubuntu',
-                fontWeight: FontWeight.bold,
-                fontSize: 15.0,
-                color: Colors.black,
-              ),
-            ),
-          ),
-          TextButton(
-            onPressed: null,
-            style: ButtonStyle(
-              backgroundColor: MaterialStatePropertyAll(Colors.red)
-            ),
-            child: Text("Lost",
-              style: TextStyle(
-                fontFamily: 'Ubuntu',
-                fontWeight: FontWeight.bold,
-                fontSize: 15.0,
-                color: Colors.black,
-              ),
-            ),
-          ),
-        TextButton(
-          onPressed: null,
-          style: ButtonStyle(
-              backgroundColor: MaterialStatePropertyAll(Colors.deepPurpleAccent)
-          ),
-          child: Text("Trapped/Kidnapped",
-            style: TextStyle(
-              fontFamily: 'Ubuntu',
-              fontWeight: FontWeight.bold,
-              fontSize: 15.0,
-              color: Colors.black,
-              ),
-            ),
-          ),
-        TextButton(
-          onPressed: null,
-          style: ButtonStyle(
-              backgroundColor: MaterialStatePropertyAll(Colors.blueAccent)
-          ),
-          child: Text("Chemical Outbreak",
-            style: TextStyle(
-              fontFamily: 'Ubuntu',
-              fontWeight:FontWeight.bold,
-              fontSize: 15.0,
-              color: Colors.black,
-              )
-            ),
-          ),
-        ],
+        backgroundColor: Colors.blue,
+        //color: Colors.white,
       ),
 
-      floatingActionButton: FloatingActionButton(
-        onPressed: (){},
-        backgroundColor: Colors.deepPurpleAccent,
-        child: const Text(
-          "I'm okay",
-        style: TextStyle(
-          fontFamily: 'Ubuntu',
-          color: Colors.black,
-        ),
+      body: ListView.separated(
+        itemBuilder: (BuildContext context, int index) {
+          List <String> names = ['Car Crash','Fire', 'Lost', 'Kidnapped/Trapped','Chemical Outbreak','Other' ];
+          return Container(
+            constraints: BoxConstraints(
+              minHeight: 50, // Adjust this according to your needs
+            ),
+            color: Colors.white,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                ListTile(
+                  trailing: Icon(Icons.device_hub),
+                  title: Text('${names[index]}'),
+                  leading: Icon(Icons.local_activity),
+                ),
+                Divider(
+                  color: Colors.black,
+                  thickness: 1, // Adjust the thickness of the divider if needed
+                ),
+              ],
+            ),
+          );
+        },
+        separatorBuilder: (BuildContext context, int index) => SizedBox(height: 0),
+        itemCount: 6,
       ),
-    ));
-
+    );
   }
 }
 
